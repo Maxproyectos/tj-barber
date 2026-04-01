@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T.J Barber</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #0f0f0f;
+    color: white;
+}
+
+header {
+    background: black;
+    padding: 20px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.hero {
+    text-align: center;
+    padding: 60px;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+    url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438') center/cover;
+}
+
+.hero h1 {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.section {
+    padding: 40px;
+    text-align: center;
+}
+
+.card {
+    background: #1c1c1c;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 12px;
+    display: inline-block;
+    width: 200px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: #292929;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    background: gold;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: orange;
+}
+
+input, select {
+    padding: 10px;
+    margin: 8px;
+    width: 220px;
+    border-radius: 6px;
+    border: none;
+}
+
+#reserva {
+    background: #1c1c1c;
+    padding: 25px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: black;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25D366;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.direccion {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+💈 T.J Barber
+<div class="direccion">
+📍 Barrio Papel Sobre el Camino Viejo
+</div>
+</header>
+
+<div class="hero">
+<h1>Tu mejor corte empieza aquí</h1>
+<p>Reservá tu turno fácil y rápido</p>
+</div>
+
+<div class="section">
+<h2>Servicios</h2>
+
+<div class="card">✂️ Corte - $8.000</div>
+<div class="card">🧔 Barba - $2.000</div>
+<div class="card">🔥 Corte+Barba+Cejas - $10.000</div>
+
+</div>
+
+<div class="section">
+<h2>Reservar turno</h2>
+
+<div id="reserva">
+<input type="text" id="nombre" placeholder="Tu nombre"><br>
+
+<select id="servicio">
+<option>Corte</option>
+<option>Barba</option>
+<option>Corte+Barba+Cejas</option>
+</select><br>
+
+<input type="date" id="fecha"><br>
+<input type="time" id="hora"><br>
+
+<button onclick="reservar()">Reservar + WhatsApp</button>
+</div>
+
+<p id="mensaje"></p>
+
+</div>
+
+<footer>
+© 2026 T.J Barber <br><br>
+📍 Barrio Papel Sobre el Camino Viejo <br>
+📱 +54 9 381 341 6180 <br><br>
+💻 Desarrollado por <strong>Maximiliano Marin (Max.OS)</strong>
+</footer>
+
+<div class="whatsapp" onclick="abrirWhatsApp()">
+📱
+</div>
+
+<script>
+let ultimaReserva = "";
+
+function reservar() {
+    let nombre = document.getElementById("nombre").value;
+    let servicio = document.getElementById("servicio").value;
+    let fecha = document.getElementById("fecha").value;
+    let hora = document.getElementById("hora").value;
+
+    if(nombre === "" || fecha === "" || hora === "") {
+        document.getElementById("mensaje").innerText = "⚠️ Completa todos los datos";
+        return;
+    }
+
+    let texto = `Hola! Quiero reservar un turno:\n\n👤 Nombre: ${nombre}\n💈 Servicio: ${servicio}\n📅 Fecha: ${fecha}\n⏰ Hora: ${hora}`;
+    
+    localStorage.setItem("turno", texto);
+    ultimaReserva = texto;
+
+    document.getElementById("mensaje").innerText = "✅ Turno listo para enviar por WhatsApp";
+}
+
+function abrirWhatsApp() {
+    let texto = ultimaReserva || localStorage.getItem("turno");
+
+    if(!texto) {
+        alert("Primero reserva un turno");
+        return;
+    }
+
+    let numero = "5493813416180";
+
+    let url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+    window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
