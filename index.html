@@ -19,7 +19,6 @@ header {
     text-align: center;
     font-size: 28px;
     font-weight: bold;
-    letter-spacing: 1px;
 }
 
 .hero {
@@ -30,12 +29,6 @@ header {
 
 .hero img {
     width: 300px;
-    margin-bottom: 20px;
-}
-
-.hero h1 {
-    font-size: 45px;
-    margin-bottom: 10px;
 }
 
 .section {
@@ -50,12 +43,6 @@ header {
     border-radius: 12px;
     display: inline-block;
     width: 200px;
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: scale(1.05);
-    background: #292929;
 }
 
 button {
@@ -65,10 +52,6 @@ button {
     cursor: pointer;
     border-radius: 8px;
     font-weight: bold;
-}
-
-button:hover {
-    background: orange;
 }
 
 input, select {
@@ -88,10 +71,8 @@ input, select {
 
 footer {
     text-align: center;
-    padding: 25px;
+    padding: 20px;
     background: black;
-    color: #aaa;
-    font-size: 14px;
 }
 
 .whatsapp {
@@ -101,14 +82,7 @@ footer {
     background: #25D366;
     padding: 15px;
     border-radius: 50%;
-    font-size: 22px;
     cursor: pointer;
-}
-
-.direccion {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #ccc;
 }
 </style>
 </head>
@@ -116,25 +90,21 @@ footer {
 <body>
 
 <header>
-💈 T.J Barber
-<div class="direccion">
+💈 T.J Barber <br>
 📍 Barrio Papel Sobre el Camino Viejo
-</div>
 </header>
 
 <div class="hero">
-<img src="logo.jpg" alt="T.J Barber Logo">
+<img src="logo.jpg">
 <h1>Tu mejor corte empieza aquí</h1>
 <p>Reservá tu turno fácil y rápido</p>
 </div>
 
 <div class="section">
 <h2>Servicios</h2>
-
-<div class="card">✂️ Corte - $8.000</div>
-<div class="card">🧔 Barba - $2.000</div>
-<div class="card">🔥 Corte+Barba+Cejas - $10.000</div>
-
+<div class="card">✂️ Corte - $8000</div>
+<div class="card">🧔 Barba - $2000</div>
+<div class="card">🔥 Corte+Barba+Cejas - $10000</div>
 </div>
 
 <div class="section">
@@ -152,7 +122,12 @@ footer {
 <input type="date" id="fecha"><br>
 <input type="time" id="hora"><br>
 
-<button onclick="reservar()">Reservar + WhatsApp</button>
+<select id="pago">
+<option value="local">Pagar en el local</option>
+<option value="mp">Pagar con MercadoPago</option>
+</select><br>
+
+<button onclick="reservar()">Reservar turno</button>
 </div>
 
 <p id="mensaje"></p>
@@ -160,15 +135,11 @@ footer {
 </div>
 
 <footer>
-© 2026 T.J Barber <br><br>
-📍 Barrio Papel Sobre el Camino Viejo <br>
-📱 +54 9 381 341 6180 <br><br>
-💻 Desarrollado por <strong>Maximiliano Marin (Max.OS)</strong>
+© 2026 T.J Barber <br>
+📱 +54 9 381 341 6180
 </footer>
 
-<div class="whatsapp" onclick="abrirWhatsApp()">
-📱
-</div>
+<div class="whatsapp" onclick="abrirWhatsApp()">📱</div>
 
 <script>
 let ultimaReserva = "";
@@ -178,18 +149,37 @@ function reservar() {
     let servicio = document.getElementById("servicio").value;
     let fecha = document.getElementById("fecha").value;
     let hora = document.getElementById("hora").value;
+    let pago = document.getElementById("pago").value;
 
     if(nombre === "" || fecha === "" || hora === "") {
         document.getElementById("mensaje").innerText = "⚠️ Completa todos los datos";
         return;
     }
 
-    let texto = `Hola! Quiero reservar un turno:\n\n👤 Nombre: ${nombre}\n💈 Servicio: ${servicio}\n📅 Fecha: ${fecha}\n⏰ Hora: ${hora}`;
-    
+    let texto = `Hola! Quiero reservar un turno:\n\n👤 Nombre: ${nombre}\n💈 Servicio: ${servicio}\n📅 Fecha: ${fecha}\n⏰ Hora: ${hora}\n💳 Pago: ${pago}`;
+
     localStorage.setItem("turno", texto);
     ultimaReserva = texto;
 
-    document.getElementById("mensaje").innerText = "✅ Turno listo para enviar por WhatsApp";
+    // 🔥 LINKS DE MERCADOPAGO (REEMPLAZAR)
+    let linkPago = "";
+
+    if(servicio === "Corte") {
+        linkPago = "https://link.mercadopago.com.ar/TU_LINK_CORTE";
+    } 
+    else if(servicio === "Barba") {
+        linkPago = "https://link.mercadopago.com.ar/TU_LINK_BARBA";
+    } 
+    else if(servicio === "Corte+Barba+Cejas") {
+        linkPago = "https://link.mercadopago.com.ar/TU_LINK_COMPLETO";
+    }
+
+    if(pago === "mp") {
+        window.open(linkPago, "_blank");
+        document.getElementById("mensaje").innerText = "💳 Pagá y luego enviá el WhatsApp";
+    } else {
+        document.getElementById("mensaje").innerText = "✅ Turno reservado, pagás en el local";
+    }
 }
 
 function abrirWhatsApp() {
@@ -201,7 +191,6 @@ function abrirWhatsApp() {
     }
 
     let numero = "5493813416180";
-
     let url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
     window.open(url, "_blank");
 }
