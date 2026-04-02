@@ -12,6 +12,11 @@ body {
     text-align:center;
 }
 
+input, button {
+    padding:10px;
+    margin:5px;
+}
+
 .card {
     background:#1c1c1c;
     margin:10px;
@@ -23,18 +28,66 @@ body {
 
 <body>
 
-<h1>Panel Admin</h1>
+<!-- LOGIN -->
+<div id="login">
+    <h1>🔐 Panel Admin</h1>
 
-<input type="date" id="fecha">
-<input type="time" id="hora">
-<button onclick="bloquear()">Bloquear turno</button>
+    <input type="text" id="user" placeholder="Usuario"><br>
+    <input type="password" id="pass" placeholder="Contraseña"><br>
 
-<div id="lista"></div>
+    <button onclick="login()">Ingresar</button>
+
+    <p id="error" style="color:red;"></p>
+</div>
+
+<!-- PANEL -->
+<div id="panel" style="display:none;">
+
+    <h1>🧑‍💻 Admin Barber</h1>
+
+    <h3>Bloquear horario</h3>
+    <input type="date" id="fecha">
+    <input type="time" id="hora">
+    <button onclick="bloquear()">Bloquear turno</button>
+
+    <h3>Turnos ocupados</h3>
+    <div id="lista"></div>
+
+    <br>
+    <button onclick="logout()" style="background:red;">Cerrar sesión</button>
+
+</div>
 
 <script>
+
+// LOGIN
+function login() {
+    let user = document.getElementById("user").value;
+    let pass = document.getElementById("pass").value;
+
+    if(user === "Tomas" && pass === "TomasTjBar") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        cargar();
+    } else {
+        document.getElementById("error").innerText = "❌ Datos incorrectos";
+    }
+}
+
+// LOGOUT
+function logout() {
+    location.reload();
+}
+
+// BLOQUEAR TURNOS
 function bloquear() {
     let fecha = document.getElementById("fecha").value;
     let hora = document.getElementById("hora").value;
+
+    if(!fecha || !hora) {
+        alert("Completar datos");
+        return;
+    }
 
     let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
 
@@ -42,22 +95,32 @@ function bloquear() {
 
     localStorage.setItem("ocupados", JSON.stringify(ocupados));
 
-    alert("Bloqueado");
+    alert("✅ Turno bloqueado");
     cargar();
 }
 
+// MOSTRAR TURNOS
 function cargar() {
     let lista = document.getElementById("lista");
     lista.innerHTML = "";
 
     let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
 
+    if(ocupados.length === 0) {
+        lista.innerHTML = "<p>No hay turnos bloqueados</p>";
+        return;
+    }
+
     ocupados.forEach(t => {
-        lista.innerHTML += `<div class="card">📅 ${t.fecha} - ⏰ ${t.hora}</div>`;
+        lista.innerHTML += `
+        <div class="card">
+            📅 ${t.fecha} <br>
+            ⏰ ${t.hora}
+        </div>
+        `;
     });
 }
 
-cargar();
 </script>
 
 </body>
