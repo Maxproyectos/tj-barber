@@ -143,6 +143,9 @@ footer {
 📍 Barrio Papel Sobre el Camino Viejo <br>
 📱 +54 9 381 341 6180 <br><br>
 💻 Desarrollado por <strong>Maximiliano Marin (Max.OS)</strong>
+
+<br><br>
+<button onclick="abrirAdmin()" style="background:red;">Panel Admin</button>
 </footer>
 
 <div class="whatsapp" onclick="abrirWhatsApp()">📱</div>
@@ -150,15 +153,30 @@ footer {
 <script>
 let ultimaReserva = "";
 
+// 🔥 HORARIOS
+function horarioValido(fecha, hora) {
+    let dia = new Date(fecha).getDay();
+    let h = hora.split(":");
+    let horaNum = parseInt(h[0]) + parseInt(h[1]) / 60;
+
+    if(dia === 0) return false;
+
+    if(dia >= 1 && dia <= 4) {
+        return (horaNum >= 10 && horaNum <= 12.5) || (horaNum >= 15 && horaNum <= 21.5);
+    }
+
+    if(dia === 5 || dia === 6) {
+        return (horaNum >= 9.5 && horaNum <= 21.5);
+    }
+
+    return false;
+}
+
 function mostrarComprobante() {
     let pago = document.getElementById("pago").value;
     let div = document.getElementById("comprobanteDiv");
 
-    if(pago === "mp") {
-        div.style.display = "block";
-    } else {
-        div.style.display = "none";
-    }
+    div.style.display = (pago === "mp") ? "block" : "none";
 }
 
 function reservar() {
@@ -173,37 +191,42 @@ function reservar() {
         return;
     }
 
-    let texto = `Hola! Quiero reservar un turno:\n\n👤 Nombre: ${nombre}\n💈 Servicio: ${servicio}\n📅 Fecha: ${fecha}\n⏰ Hora: ${hora}\n💳 Pago: ${pago}`;
+    if(!horarioValido(fecha, hora)) {
+        document.getElementById("mensaje").innerText = "⛔ Horario no disponible";
+        return;
+    }
+
+    let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
+    let existe = ocupados.find(t => t.fecha === fecha && t.hora === hora);
+
+    if(existe) {
+        document.getElementById("mensaje").innerText = "❌ Ese horario ya está ocupado";
+        return;
+    }
+
+    let texto = `Hola! Quiero reservar un turno:\n\n👤 ${nombre}\n💈 ${servicio}\n📅 ${fecha}\n⏰ ${hora}\n💳 ${pago}`;
 
     localStorage.setItem("turno", texto);
     ultimaReserva = texto;
 
-    let linkPago = "";
+    // guardar ocupados
+    ocupados.push({fecha, hora});
+    localStorage.setItem("ocupados", JSON.stringify(ocupados));
 
-    if(servicio === "Corte") {
-        linkPago = "https://link.mercadopago.com.ar/tjbarberia1";
-    } 
-    else if(servicio === "Barba") {
-        linkPago = "https://link.mercadopago.com.ar/tjbarberia1";
-    } 
-    else if(servicio === "Corte+Barba+Cejas") {
-        linkPago = "https://link.mercadopago.com.ar/tjbarberia1";
-    }
+    let linkPago = "https://link.mercadopago.com.ar/tjbarberia1";
 
     if(pago === "mp") {
-
         let archivo = document.getElementById("comprobante").files[0];
 
         if(!archivo) {
-            document.getElementById("mensaje").innerText = "⚠️ Subí el comprobante de pago";
+            document.getElementById("mensaje").innerText = "⚠️ Subí el comprobante";
             return;
         }
 
         window.open(linkPago, "_blank");
-        document.getElementById("mensaje").innerText = "💳 Pagá, subí comprobante y luego enviá el WhatsApp";
-
+        document.getElementById("mensaje").innerText = "💳 Pagá y enviá comprobante por WhatsApp";
     } else {
-        document.getElementById("mensaje").innerText = "✅ Turno reservado, pagás en el local";
+        document.getElementById("mensaje").innerText = "✅ Turno reservado";
     }
 }
 
@@ -215,9 +238,12 @@ function abrirWhatsApp() {
         return;
     }
 
-    let numero = "5493813416180";
-    let url = `https://wa.me/${numero}?text=${encodeURIComponent(texto + "\n📷 Envié comprobante")}`;
+    let url = `https://wa.me/5493813416180?text=${encodeURIComponent(texto)}`;
     window.open(url, "_blank");
+}
+
+function abrirAdmin() {
+    window.open("admin.html", "_blank");
 }
 </script>
 
