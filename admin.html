@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Admin</title>
+
+<style>
+body {
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+.card {
+    background:#1c1c1c;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Panel Admin</h1>
+
+<input type="date" id="fecha">
+<input type="time" id="hora">
+<button onclick="bloquear()">Bloquear turno</button>
+
+<div id="lista"></div>
+
+<script>
+function bloquear() {
+    let fecha = document.getElementById("fecha").value;
+    let hora = document.getElementById("hora").value;
+
+    let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
+
+    ocupados.push({fecha, hora});
+
+    localStorage.setItem("ocupados", JSON.stringify(ocupados));
+
+    alert("Bloqueado");
+    cargar();
+}
+
+function cargar() {
+    let lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    let ocupados = JSON.parse(localStorage.getItem("ocupados")) || [];
+
+    ocupados.forEach(t => {
+        lista.innerHTML += `<div class="card">📅 ${t.fecha} - ⏰ ${t.hora}</div>`;
+    });
+}
+
+cargar();
+</script>
+
+</body>
+</html>
