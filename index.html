@@ -42,7 +42,7 @@ header {
     padding: 20px;
     border-radius: 12px;
     display: inline-block;
-    width: 200px;
+    width: 220px;
 }
 
 button {
@@ -107,6 +107,14 @@ footer {
 <div class="card">🔥 Corte+Barba+Cejas - $10000</div>
 </div>
 
+<!-- 🔥 NUEVA SECCIÓN HORARIOS -->
+<div class="section">
+<h2>Horarios</h2>
+<div class="card">📅 Lunes a Jueves<br>10:00 - 12:30<br>15:00 - 21:30</div>
+<div class="card">📅 Viernes y Sábado<br>09:00 - 21:30</div>
+<div class="card">❌ Domingo<br>Cerrado</div>
+</div>
+
 <div class="section">
 <h2>Reservar turno</h2>
 
@@ -153,20 +161,20 @@ footer {
 <script>
 let ultimaReserva = "";
 
-// 🔥 HORARIOS
+// 🔥 HORARIOS CORREGIDOS
 function horarioValido(fecha, hora) {
     let dia = new Date(fecha).getDay();
     let h = hora.split(":");
     let horaNum = parseInt(h[0]) + parseInt(h[1]) / 60;
 
-    if(dia === 0) return false;
+    if(dia === 0) return false; // domingo
 
     if(dia >= 1 && dia <= 4) {
         return (horaNum >= 10 && horaNum <= 12.5) || (horaNum >= 15 && horaNum <= 21.5);
     }
 
     if(dia === 5 || dia === 6) {
-        return (horaNum >= 9.5 && horaNum <= 21.5);
+        return (horaNum >= 9 && horaNum <= 21.5);
     }
 
     return false;
@@ -209,7 +217,6 @@ function reservar() {
     localStorage.setItem("turno", texto);
     ultimaReserva = texto;
 
-    // guardar ocupados
     ocupados.push({fecha, hora});
     localStorage.setItem("ocupados", JSON.stringify(ocupados));
 
