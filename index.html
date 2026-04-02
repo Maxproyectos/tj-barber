@@ -122,10 +122,14 @@ footer {
 <input type="date" id="fecha"><br>
 <input type="time" id="hora"><br>
 
-<select id="pago">
+<select id="pago" onchange="mostrarComprobante()">
 <option value="local">Pagar en el local</option>
 <option value="mp">Pagar con MercadoPago</option>
 </select><br>
+
+<div id="comprobanteDiv" style="display:none;">
+<input type="file" id="comprobante" accept="image/*"><br>
+</div>
 
 <button onclick="reservar()">Reservar turno</button>
 </div>
@@ -146,6 +150,17 @@ footer {
 <script>
 let ultimaReserva = "";
 
+function mostrarComprobante() {
+    let pago = document.getElementById("pago").value;
+    let div = document.getElementById("comprobanteDiv");
+
+    if(pago === "mp") {
+        div.style.display = "block";
+    } else {
+        div.style.display = "none";
+    }
+}
+
 function reservar() {
     let nombre = document.getElementById("nombre").value;
     let servicio = document.getElementById("servicio").value;
@@ -163,7 +178,6 @@ function reservar() {
     localStorage.setItem("turno", texto);
     ultimaReserva = texto;
 
-    // 🔥 LINKS DE MERCADOPAGO (REEMPLAZAR)
     let linkPago = "";
 
     if(servicio === "Corte") {
@@ -177,8 +191,17 @@ function reservar() {
     }
 
     if(pago === "mp") {
+
+        let archivo = document.getElementById("comprobante").files[0];
+
+        if(!archivo) {
+            document.getElementById("mensaje").innerText = "⚠️ Subí el comprobante de pago";
+            return;
+        }
+
         window.open(linkPago, "_blank");
-        document.getElementById("mensaje").innerText = "💳 Pagá y luego enviá el WhatsApp";
+        document.getElementById("mensaje").innerText = "💳 Pagá, subí comprobante y luego enviá el WhatsApp";
+
     } else {
         document.getElementById("mensaje").innerText = "✅ Turno reservado, pagás en el local";
     }
@@ -193,7 +216,7 @@ function abrirWhatsApp() {
     }
 
     let numero = "5493813416180";
-    let url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+    let url = `https://wa.me/${numero}?text=${encodeURIComponent(texto + "\n📷 Envié comprobante")}`;
     window.open(url, "_blank");
 }
 </script>
